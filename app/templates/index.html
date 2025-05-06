@@ -1,1 +1,118 @@
- 
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-3 mb-4">
+    <div class="container-fluid py-4">
+        <h1 class="display-4 fw-bold">Suarakan Kebutuhan Komunitas Anda</h1>
+        <p class="col-md-8 fs-4">KomuniTech adalah platform yang memudahkan Anda dan komunitas untuk menyampaikan kebutuhan secara terstruktur dan terorganisir.</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('ajukan') }}" class="btn btn-primary btn-lg px-4 me-md-2">Ajukan Kebutuhan</a>
+            {% else %}
+            <a href="{{ url_for('daftar') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar Sekarang</a>
+            {% endif %}
+            <a href="{{ url_for('daftar_kebutuhan') }}" class="btn btn-outline-secondary btn-lg px-4">Lihat Kebutuhan</a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5 g-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-megaphone display-4 text-primary mb-3"></i>
+                <h3 class="card-title">Sampaikan Kebutuhan</h3>
+                <p class="card-text">Ajukan kebutuhan komunitas Anda dengan mudah dan terstruktur. Kami akan membantu Anda menyampaikannya dengan jelas.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-people display-4 text-primary mb-3"></i>
+                <h3 class="card-title">Dukungan Komunitas</h3>
+                <p class="card-text">Dapatkan dukungan dari anggota komunitas lain. Semakin banyak dukungan, semakin terlihat kebutuhan Anda.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-gear display-4 text-primary mb-3"></i>
+                <h3 class="card-title">Solusi yang Tepat</h3>
+                <p class="card-text">Kami akan menghubungkan kebutuhan Anda dengan solusi yang tepat, baik melalui teknologi maupun program pendukung yang tersedia.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row align-items-center mt-5 mb-5">
+    <div class="col-lg-6">
+        <h2 class="fw-bold mb-3">Mengapa KomuniTech?</h2>
+        <p class="lead">KomuniTech dirancang dengan fokus pada kemudahan penggunaan dan efektivitas penyampaian kebutuhan komunitas.</p>
+        <ul class="list-group list-group-flush mt-3">
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Antarmuka yang sederhana dan mudah digunakan</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Kategorisasi kebutuhan untuk memudahkan penemuan</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Sistem dukungan untuk melihat kebutuhan prioritas</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Platform diskusi untuk membahas kebutuhan bersama</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Transparansi dalam kemajuan penanganan kebutuhan</li>
+        </ul>
+    </div>
+    <div class="col-lg-6">
+        <div class="p-5 bg-light rounded-3">
+            <h3 class="text-center mb-4">Kategori Kebutuhan</h3>
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                        <i class="bi bi-building text-primary me-3 fs-4"></i>
+                        <span>Infrastruktur</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                        <i class="bi bi-book text-primary me-3 fs-4"></i>
+                        <span>Pendidikan</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                        <i class="bi bi-heart-pulse text-primary me-3 fs-4"></i>
+                        <span>Kesehatan</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                        <i class="bi bi-graph-up-arrow text-primary me-3 fs-4"></i>
+                        <span>Ekonomi</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                        <i class="bi bi-tree text-primary me-3 fs-4"></i>
+                        <span>Lingkungan</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                        <i class="bi bi-cpu text-primary me-3 fs-4"></i>
+                        <span>Teknologi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="p-5 bg-light rounded-3 text-center mt-5">
+    <h2 class="mb-4">Bergabunglah Sekarang</h2>
+    <p class="lead mb-4">Jadilah bagian dari perubahan. Suarakan kebutuhan komunitas Anda bersama KomuniTech.</p>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('ajukan') }}" class="btn btn-primary btn-lg px-4">Ajukan Kebutuhan</a>
+        {% else %}
+        <a href="{{ url_for('daftar') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Masuk</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
