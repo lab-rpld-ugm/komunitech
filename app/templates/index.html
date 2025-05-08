@@ -4,14 +4,14 @@
 <div class="jumbotron bg-light p-5 rounded-3 mb-4">
     <div class="container-fluid py-4">
         <h1 class="display-4 fw-bold">Suarakan Kebutuhan Komunitas Anda</h1>
-        <p class="col-md-8 fs-4">KomuniTech adalah platform yang memudahkan Anda dan komunitas untuk menyampaikan kebutuhan secara terstruktur dan terorganisir.</p>
+        <p class="col-md-8 fs-4">KomuniTech adalah platform yang memudahkan Anda dan komunitas untuk menyampaikan project dan kebutuhan secara terstruktur dan terorganisir.</p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
             {% if current_user.is_authenticated %}
-            <a href="{{ url_for('ajukan') }}" class="btn btn-primary btn-lg px-4 me-md-2">Ajukan Kebutuhan</a>
+            <a href="{{ url_for('buat_project') }}" class="btn btn-primary btn-lg px-4 me-md-2">Buat Project</a>
             {% else %}
             <a href="{{ url_for('daftar') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar Sekarang</a>
             {% endif %}
-            <a href="{{ url_for('daftar_kebutuhan') }}" class="btn btn-outline-secondary btn-lg px-4">Lihat Kebutuhan</a>
+            <a href="{{ url_for('daftar_project') }}" class="btn btn-outline-secondary btn-lg px-4">Lihat Project</a>
         </div>
     </div>
 </div>
@@ -20,9 +20,18 @@
     <div class="col-md-4">
         <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
-                <i class="bi bi-megaphone display-4 text-primary mb-3"></i>
-                <h3 class="card-title">Sampaikan Kebutuhan</h3>
-                <p class="card-text">Ajukan kebutuhan komunitas Anda dengan mudah dan terstruktur. Kami akan membantu Anda menyampaikannya dengan jelas.</p>
+                <i class="bi bi-briefcase display-4 text-primary mb-3"></i>
+                <h3 class="card-title">Buat Project</h3>
+                <p class="card-text">Buat project untuk menaungi kebutuhan-kebutuhan yang saling berkaitan. Project adalah langkah awal untuk mewujudkan ide Anda.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-card-checklist display-4 text-primary mb-3"></i>
+                <h3 class="card-title">Ajukan Kebutuhan</h3>
+                <p class="card-text">Tambahkan kebutuhan spesifik dalam sebuah project. Semakin rinci kebutuhan, semakin mudah untuk dipahami dan direalisasikan.</p>
             </div>
         </div>
     </div>
@@ -30,32 +39,74 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
                 <i class="bi bi-people display-4 text-primary mb-3"></i>
-                <h3 class="card-title">Dukungan Komunitas</h3>
-                <p class="card-text">Dapatkan dukungan dari anggota komunitas lain. Semakin banyak dukungan, semakin terlihat kebutuhan Anda.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-gear display-4 text-primary mb-3"></i>
-                <h3 class="card-title">Solusi yang Tepat</h3>
-                <p class="card-text">Kami akan menghubungkan kebutuhan Anda dengan solusi yang tepat, baik melalui teknologi maupun program pendukung yang tersedia.</p>
+                <h3 class="card-title">Dukung & Diskusikan</h3>
+                <p class="card-text">Berikan dukungan dan komentar pada kebutuhan yang menurut Anda penting. Semakin banyak dukungan, semakin prioritas kebutuhan tersebut.</p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Project Terbaru -->
+<h2 class="fw-bold mb-4">Project Terbaru</h2>
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            {% if project.gambar_url %}
+            <img src="{{ project.gambar_url }}" class="card-img-top" alt="{{ project.judul }}" style="height: 180px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light text-center py-5">
+                <i class="bi bi-briefcase fs-1 text-secondary"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <span class="badge bg-primary mb-2">{{ project.kategori_project.nama }}</span>
+                <h5 class="card-title mb-2">
+                    <a href="{{ url_for('detail_project', id=project.id) }}" class="text-decoration-none text-dark stretched-link">
+                        {{ project.judul }}
+                    </a>
+                </h5>
+                <p class="text-muted small mb-2">Dibuat oleh {{ project.pemilik.nama }} pada {{ project.timestamp.strftime('%d/%m/%Y') }}</p>
+                <p class="card-text">{{ project.deskripsi|truncate(120) }}</p>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-secondary">{{ project.status }}</span>
+                    <div>
+                        <i class="bi bi-card-checklist me-1"></i> {{ project.kebutuhan.count() }} Kebutuhan
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="text-center mb-5">
+    <a href="{{ url_for('daftar_project') }}" class="btn btn-outline-primary">Lihat Semua Project</a>
+</div>
+{% else %}
+<div class="alert alert-info mb-5">
+    <div class="d-flex">
+        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+        <div>
+            <h5 class="alert-heading">Belum Ada Project</h5>
+            <p class="mb-0">Jadilah yang pertama membuat project di KomuniTech!</p>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <div class="row align-items-center mt-5 mb-5">
     <div class="col-lg-6">
         <h2 class="fw-bold mb-3">Mengapa KomuniTech?</h2>
         <p class="lead">KomuniTech dirancang dengan fokus pada kemudahan penggunaan dan efektivitas penyampaian kebutuhan komunitas.</p>
         <ul class="list-group list-group-flush mt-3">
-            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Antarmuka yang sederhana dan mudah digunakan</li>
-            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Kategorisasi kebutuhan untuk memudahkan penemuan</li>
-            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Sistem dukungan untuk melihat kebutuhan prioritas</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Struktur Project & Kebutuhan yang terorganisir</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Dukungan untuk gambar dan media visual</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Sistem dukungan yang adil dan transparan</li>
             <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Platform diskusi untuk membahas kebutuhan bersama</li>
-            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Transparansi dalam kemajuan penanganan kebutuhan</li>
+            <li class="list-group-item border-0 ps-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Pelacakan kebutuhan yang telah Anda dukung</li>
         </ul>
     </div>
     <div class="col-lg-6">
@@ -108,7 +159,7 @@
     <p class="lead mb-4">Jadilah bagian dari perubahan. Suarakan kebutuhan komunitas Anda bersama KomuniTech.</p>
     <div class="d-grid gap-2 d-md-flex justify-content-md-center">
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('ajukan') }}" class="btn btn-primary btn-lg px-4">Ajukan Kebutuhan</a>
+        <a href="{{ url_for('buat_project') }}" class="btn btn-primary btn-lg px-4">Buat Project</a>
         {% else %}
         <a href="{{ url_for('daftar') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar</a>
         <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Masuk</a>

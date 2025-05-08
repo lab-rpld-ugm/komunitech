@@ -1,14 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="mb-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('beranda') }}">Beranda</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('daftar_project') }}">Project</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('detail_project', id=project.id) }}">{{ project.judul }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Ajukan Kebutuhan
+      </li>
+    </ol>
+  </nav>
+</div>
+
 <div class="row justify-content-center">
     <div class="col-md-10">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Ajukan Kebutuhan Komunitas</h4>
+                <h4 class="mb-0">Ajukan Kebutuhan untuk Project: {{ project.judul }}</h4>
             </div>
             <div class="card-body p-4">
-                <form action="" method="post" novalidate>
+                <form action="" method="post" enctype="multipart/form-data" novalidate>
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
                         {{ form.judul.label(class="form-label") }}
@@ -49,6 +68,15 @@
                             </ul>
                         </div>
                         {% for error in form.deskripsi.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.gambar.label(class="form-label") }}
+                        {{ form.gambar(class="form-control") }}
+                        <div class="form-text">Unggah gambar untuk memperjelas kebutuhan (opsional).</div>
+                        {% for error in form.gambar.errors %}
                         <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>

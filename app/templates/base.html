@@ -24,13 +24,18 @@
                            href="{{ url_for('beranda') }}">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('daftar_kebutuhan') %}active{% endif %}" 
-                           href="{{ url_for('daftar_kebutuhan') }}">Lihat Kebutuhan</a>
+                        <a class="nav-link {% if request.path == url_for('daftar_project') %}active{% endif %}" 
+                           href="{{ url_for('daftar_project') }}">Project</a>
                     </li>
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('ajukan') %}active{% endif %}" 
-                           href="{{ url_for('ajukan') }}">Ajukan Kebutuhan</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Tambah
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('buat_project') }}">Buat Project</a></li>
+                        </ul>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -47,6 +52,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="#">Profil Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('project_saya') }}">Project Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('kebutuhan_saya') }}">Kebutuhan Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('dukungan_saya') }}">Dukungan Saya</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('logout') }}">Keluar</a></li>
                         </ul>
@@ -94,7 +102,7 @@
                     <h5>Tautan</h5>
                     <ul class="list-unstyled">
                         <li><a href="{{ url_for('beranda') }}" class="text-decoration-none">Beranda</a></li>
-                        <li><a href="{{ url_for('daftar_kebutuhan') }}" class="text-decoration-none">Kebutuhan</a></li>
+                        <li><a href="{{ url_for('daftar_project') }}" class="text-decoration-none">Project</a></li>
                         <li><a href="{{ url_for('tentang') }}" class="text-decoration-none">Tentang</a></li>
                     </ul>
                 </div>

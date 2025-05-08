@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, TextAreaField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from app.models import Pengguna, Kategori
@@ -26,6 +27,17 @@ class RegisterForm(FlaskForm):
         if user is not None:
             raise ValidationError('Email ini sudah terdaftar. Silakan gunakan email lain.')
 
+class ProjectForm(FlaskForm):
+    judul = StringField('Judul Project', validators=[DataRequired(), Length(min=5, max=140)])
+    kategori = SelectField('Kategori', coerce=int, validators=[DataRequired()])
+    deskripsi = TextAreaField('Deskripsi Project', validators=[DataRequired(), Length(min=10, max=5000)])
+    gambar = FileField('Gambar Project (Opsional)', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
+    submit = SubmitField('Buat Project')
+    
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.kategori.choices = [(k.id, k.nama) for k in Kategori.query.order_by(Kategori.nama).all()]
+
 class KebutuhanForm(FlaskForm):
     judul = StringField('Judul Kebutuhan', validators=[DataRequired(), Length(min=5, max=140)])
     kategori = SelectField('Kategori', coerce=int, validators=[DataRequired()])
@@ -35,6 +47,7 @@ class KebutuhanForm(FlaskForm):
         ('Sedang', 'Sedang'), 
         ('Tinggi', 'Tinggi')
     ], validators=[DataRequired()])
+    gambar = FileField('Gambar Kebutuhan (Opsional)', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     submit = SubmitField('Ajukan Kebutuhan')
     
     def __init__(self, *args, **kwargs):
@@ -43,4 +56,5 @@ class KebutuhanForm(FlaskForm):
 
 class KomentarForm(FlaskForm):
     isi = TextAreaField('Komentar', validators=[DataRequired(), Length(min=2, max=1000)])
+    gambar = FileField('Tambahkan Gambar (Opsional)', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
     submit = SubmitField('Kirim Komentar')
