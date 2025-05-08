@@ -5,10 +5,12 @@ from app import app, db
 from app.forms import LoginForm, RegisterForm, KebutuhanForm, KomentarForm
 from app.models import Pengguna, Kategori, Kebutuhan, Komentar
 
+
 @app.route('/')
 @app.route('/beranda')
 def beranda():
     return render_template('index.html', title='Beranda')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -27,10 +29,12 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Login', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('beranda'))
+
 
 @app.route('/daftar', methods=['GET', 'POST'])
 def daftar():
@@ -38,13 +42,15 @@ def daftar():
         return redirect(url_for('beranda'))
     form = RegisterForm()
     if form.validate_on_submit():
-        user = Pengguna(username=form.username.data, email=form.email.data, nama=form.nama.data)
+        user = Pengguna(username=form.username.data,
+                        email=form.email.data, nama=form.nama.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash('Selamat! Anda telah berhasil mendaftar.')
         return redirect(url_for('login'))
     return render_template('daftar.html', title='Daftar', form=form)
+
 
 @app.route('/ajukan', methods=['GET', 'POST'])
 @login_required
@@ -64,6 +70,7 @@ def ajukan():
         return redirect(url_for('daftar_kebutuhan'))
     return render_template('ajukan.html', title='Ajukan Kebutuhan', form=form)
 
+
 @app.route('/daftar_kebutuhan')
 def daftar_kebutuhan():
     halaman = request.args.get('halaman', 1, type=int)
@@ -74,8 +81,9 @@ def daftar_kebutuhan():
         if kebutuhan.has_next else None
     prev_url = url_for('daftar_kebutuhan', halaman=kebutuhan.prev_num) \
         if kebutuhan.has_prev else None
-    return render_template('daftar_kebutuhan.html', title='Daftar Kebutuhan', 
-                          kebutuhan=kebutuhan.items, next_url=next_url, prev_url=prev_url)
+    return render_template('daftar_kebutuhan.html', title='Daftar Kebutuhan',
+                           kebutuhan=kebutuhan.items, next_url=next_url, prev_url=prev_url)
+
 
 @app.route('/kebutuhan/<int:id>', methods=['GET', 'POST'])
 def detail_kebutuhan(id):
@@ -96,8 +104,9 @@ def detail_kebutuhan(id):
             flash('Anda harus login untuk berkomentar.')
             return redirect(url_for('login'))
     komentar = kebutuhan.komentar.order_by(Komentar.timestamp.asc()).all()
-    return render_template('detail.html', title=kebutuhan.judul, 
-                          kebutuhan=kebutuhan, komentar=komentar, form=form)
+    return render_template('detail.html', title=kebutuhan.judul,
+                           kebutuhan=kebutuhan, komentar=komentar, form=form)
+
 
 @app.route('/vote/<int:id>')
 @login_required
@@ -108,11 +117,14 @@ def vote(id):
     flash('Dukungan Anda telah diterima!')
     return redirect(url_for('detail_kebutuhan', id=id))
 
+
 @app.route('/tentang')
 def tentang():
     return render_template('tentang.html', title='Tentang KomuniTech')
 
 # Admin route untuk menambahkan kategori (biasanya akan ada proteksi admin)
+
+
 @app.route('/tambah_kategori', methods=['GET', 'POST'])
 @login_required
 def tambah_kategori():
@@ -128,8 +140,7 @@ def tambah_kategori():
     kategori = Kategori.query.all()
     return render_template('tambah_kategori.html', title='Tambah Kategori', kategori=kategori)
 
-# Inisialisasi kategori dasar ketika aplikasi pertama kali dijalankan
-@app.before_first_request
+
 def buat_kategori_dasar():
     kategori_default = [
         ('Infrastruktur', 'Kebutuhan terkait infrastruktur fisik seperti jalan, air, dan listrik'),
@@ -141,11 +152,15 @@ def buat_kategori_dasar():
         ('Teknologi', 'Kebutuhan terkait penerapan teknologi'),
         ('Lainnya', 'Kebutuhan lain yang tidak termasuk dalam kategori di atas')
     ]
-    
+
     for nama, deskripsi in kategori_default:
         kategori = Kategori.query.filter_by(nama=nama).first()
         if not kategori:
             kategori = Kategori(nama=nama, deskripsi=deskripsi)
             db.session.add(kategori)
-    
+
     db.session.commit()
+
+
+with app.app_context():
+    buat_kategori_dasar()
