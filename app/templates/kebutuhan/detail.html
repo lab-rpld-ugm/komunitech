@@ -5,13 +5,13 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <a href="{{ url_for('beranda') }}">Beranda</a>
+        <a href="{{ url_for('main.beranda') }}">Beranda</a>
       </li>
       <li class="breadcrumb-item">
-        <a href="{{ url_for('daftar_project') }}">Project</a>
+        <a href="{{ url_for('project.list_projects') }}">Project</a>
       </li>
       <li class="breadcrumb-item">
-        <a href="{{ url_for('detail_project', id=project.id) }}">{{ project.judul }}</a>
+        <a href="{{ url_for('project.detail', id=project.id) }}">{{ project.judul }}</a>
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         {{ kebutuhan.judul }}
@@ -62,7 +62,7 @@
                 <i class="bi bi-hand-thumbs-up-fill me-1"></i> Didukung ({{ kebutuhan.jumlah_dukungan }})
               </button>
               {% else %}
-              <a href="{{ url_for('dukungan', project_id=project.id, id=kebutuhan.id) }}" class="btn btn-outline-primary">
+              <a href="{{ url_for('support.support', project_id=project.id, id=kebutuhan.id) }}" class="btn btn-outline-primary">
                 <i class="bi bi-hand-thumbs-up me-1"></i> Dukung ({{ kebutuhan.jumlah_dukungan }})
               </a>
               {% endif %}
@@ -71,7 +71,7 @@
             {% endif %}
           {% else %}
           <div class="alert alert-secondary p-2 mb-0">
-            <a href="{{ url_for('login') }}">Login</a> untuk memberikan dukungan pada kebutuhan ini.
+            <a href="{{ url_for('auth.login') }}">Login</a> untuk memberikan dukungan pada kebutuhan ini.
           </div>
           {% endif %}
         </div>
@@ -148,7 +148,7 @@
         </form>
         {% else %}
         <div class="alert alert-secondary">
-          <a href="{{ url_for('login') }}">Login</a> untuk menambahkan komentar.
+          <a href="{{ url_for('auth.login') }}">Login</a> untuk menambahkan komentar.
         </div>
         {% endif %}
       </div>
@@ -164,7 +164,7 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item d-flex justify-content-between px-0">
             <span>Project</span>
-            <a href="{{ url_for('detail_project', id=project.id) }}" class="text-decoration-none">
+            <a href="{{ url_for('project.detail', id=project.id) }}" class="text-decoration-none">
               {{ project.judul }}
             </a>
           </li>

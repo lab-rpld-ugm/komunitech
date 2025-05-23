@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Edit Project: {{ project.judul }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="" method="post" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Current Image Preview -->
+                    {% if project.gambar_url %}
+                    <div class="mb-4 text-center">
+                        <h6>Gambar Saat Ini</h6>
+                        <img src="{{ project.gambar_url }}" class="img-thumbnail mb-3" style="max-height: 200px;">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image">
+                            <label class="form-check-label text-danger" for="remove_image">
+                                Hapus gambar ini
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        {{ form.judul.label(class="form-label") }}
+                        {{ form.judul(class="form-control") }}
+                        <div class="form-text">Berikan judul yang singkat dan jelas untuk project Anda.</div>
+                        {% for error in form.judul.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.kategori.label(class="form-label") }}
+                        {{ form.kategori(class="form-select") }}
+                        {% for error in form.kategori.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.deskripsi.label(class="form-label") }}
+                        {{ form.deskripsi(class="form-control", rows=10) }}
+                        <div class="form-text">
+                            Jelaskan project secara detail. Termasuk:
+                            <ul class="mt-1">
+                                <li>Tujuan utama project</li>
+                                <li>Siapa yang akan mendapatkan manfaat</li>
+                                <li>Timeline dan tahapan (jika ada)</li>
+                                <li>Sumber daya yang diperlukan</li>
+                            </ul>
+                        </div>
+                        {% for error in form.deskripsi.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.gambar.label(class="form-label") }}
+                        {{ form.gambar(class="form-control") }}
+                        <div class="form-text">
+                            {% if project.gambar_url %}
+                            Unggah gambar baru untuk mengganti yang ada (format: JPG, PNG, GIF).
+                            {% else %}
+                            Unggah gambar untuk memperjelas project Anda (format: JPG, PNG, GIF).
+                            {% endif %}
+                        </div>
+                        {% for error in form.gambar.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <div class="d-flex">
+                            <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                            <div>
+                                <h5 class="alert-heading">Perhatian!</h5>
+                                <p class="mb-0">Perubahan yang disimpan akan langsung memperbarui project ini.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('project.detail', id=project.id) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Kembali
+                        </a>
+                        <div>
+                            <button type="reset" class="btn btn-outline-danger me-2">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </button>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Script -->
+<script>
+    document.getElementById('gambar').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('image-preview');
+                if (!preview) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'mb-3 text-center';
+                    previewDiv.innerHTML = `
+                        <h6>Pratinjau Gambar Baru</h6>
+                        <img id="image-preview" src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">
+                    `;
+                    document.querySelector('form').insertBefore(previewDiv, document.querySelector('.alert'));
+                } else {
+                    preview.src = e.target.result;
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}
