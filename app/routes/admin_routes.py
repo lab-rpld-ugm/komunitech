@@ -4,7 +4,6 @@ from app.forms import KategoriForm
 from app.services.category_service import (
     get_all_categories,
     create_category,
-    seed_default_categories,
 )
 from app.utils.decorators import admin_required
 
@@ -26,16 +25,3 @@ def categories():
 
     categories = get_all_categories()
     return render_template("admin/categories.html", form=form, categories=categories)
-
-
-@admin_bp.route("/seed-categories")
-@login_required
-@admin_required
-def seed_categories():
-    try:
-        seed_default_categories()
-        flash("Default categories seeded successfully!")
-    except Exception as e:
-        flash(f"Error seeding categories: {str(e)}")
-
-    return redirect(url_for("admin.categories"))

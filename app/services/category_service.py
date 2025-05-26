@@ -32,21 +32,3 @@ def create_category(nama: str, deskripsi: str = None) -> Kategori:
     db.session.add(kategori)
     db.session.commit()
     return kategori
-
-
-def seed_default_categories():
-    """Seed default categories if they don't exist."""
-    defaults = [
-        ("Infrastruktur", "Kebutuhan terkait infrastruktur fisik"),
-        ("Pendidikan", "Kebutuhan terkait pendidikan dan pelatihan"),
-        ("Kesehatan", "Kebutuhan terkait layanan kesehatan"),
-        ("Ekonomi", "Kebutuhan terkait pengembangan ekonomi"),
-        ("Lingkungan", "Kebutuhan terkait pelestarian lingkungan"),
-        ("Sosial", "Kebutuhan terkait masalah sosial"),
-        ("Teknologi", "Kebutuhan terkait penerapan teknologi"),
-        ("Lainnya", "Kebutuhan lain yang tidak termasuk kategori lain"),
-    ]
-
-    for nama, deskripsi in defaults:
-        if not Kategori.query.filter_by(nama=nama).first():
-            create_category(nama, deskripsi)
