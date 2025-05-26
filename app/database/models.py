@@ -12,7 +12,8 @@ class Pengguna(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     nama = db.Column(db.String(120))
     password_hash = db.Column(db.String(128))
-    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    # Role: Regular, Admin, Developer
+    role = db.Column(db.Boolean, default="Regular", nullable=False)
     projects = db.relationship("Project", backref="pemilik", lazy="dynamic")
     kebutuhan = db.relationship("Kebutuhan", backref="pengaju", lazy="dynamic")
     komentar = db.relationship("Komentar", backref="penulis", lazy="dynamic")
