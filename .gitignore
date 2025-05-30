@@ -176,3 +176,4 @@ cython_debug/
 # Local files
 app/app.db
 migrations/
+app/static/uploads/

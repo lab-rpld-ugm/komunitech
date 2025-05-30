@@ -1,6 +1,13 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, TextAreaField, PasswordField, SelectField, SubmitField
+from wtforms import (
+    StringField,
+    TextAreaField,
+    PasswordField,
+    SelectField,
+    SubmitField,
+    BooleanField,
+)
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from app.database.models import Pengguna, Kategori
 
@@ -50,7 +57,9 @@ class ProjectForm(FlaskForm):
         "Gambar Project (Opsional)",
         validators=[FileAllowed(["jpg", "png", "jpeg", "gif"])],
     )
+    delete_gambar = BooleanField("Hapus Gambar")
     submit = SubmitField("Buat Project")
+    edit = SubmitField("Ubah Project")
 
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)

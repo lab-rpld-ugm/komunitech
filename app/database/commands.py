@@ -6,7 +6,7 @@ from .base import db  # Assuming db is in base.py
 from .models import Pengguna, Kategori  # Assuming models are in models.py
 
 
-@click.command(name="seed_db")
+@click.command(name="seed-db")
 @with_appcontext
 def seed_db_command():
     """Seeds the database with initial data."""

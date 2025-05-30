@@ -85,3 +85,41 @@ def validate_image(file_stream, max_size: int = 1024 * 1024 * 5) -> bool:
 
     # TODO: Add more validation like actual image content checking
     return True
+
+
+def delete_file(filepath: str) -> bool:
+    """Delete a file from the filesystem.
+
+    Args:
+        filepath: Path to the file to delete (relative to static/uploads)
+
+    Returns:
+        bool: True if deletion was successful, False otherwise
+    """
+    try:
+        # Remove "/static/uploads/" from the start of filepath if present
+        if filepath.startswith("/static/uploads/"):
+            filepath = filepath[16:]  # len("/static/uploads/") = 15
+
+        # Construct absolute path
+        abs_path = os.path.join(current_app.root_path, "static", "uploads", filepath)
+
+        # Verify the file is within uploads directory to prevent directory traversal
+        uploads_dir = os.path.join(current_app.root_path, "static/uploads")
+        if not os.path.abspath(abs_path).startswith(os.path.abspath(uploads_dir)):
+            current_app.logger.error(
+                f"Attempted file deletion outside uploads directory: {abs_path}"
+            )
+            return False
+
+        # Check if file exists before attempting deletion
+        if os.path.exists(abs_path):
+            os.remove(abs_path)
+            return True
+        else:
+            current_app.logger.warning(f"File not found for deletion: {filepath}")
+            return False
+
+    except Exception as e:
+        current_app.logger.error(f"Error deleting file {filepath}: {e}")
+        return False

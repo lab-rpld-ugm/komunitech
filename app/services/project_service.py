@@ -80,8 +80,7 @@ def update_project(
     project.judul = judul
     project.deskripsi = deskripsi
     project.kategori_id = kategori_id
-    if gambar_url:
-        project.gambar_url = gambar_url
+    project.gambar_url = gambar_url
 
     db.session.commit()
     return project

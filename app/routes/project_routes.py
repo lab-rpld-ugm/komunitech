@@ -11,6 +11,7 @@ from app.services.project_service import (
 from app.services.file_service import save_project_image
 from app.utils.pagination import generate_pagination_links
 from app.utils.helpers import is_owner_or_admin
+from app.utils.file_utils import delete_file
 
 project_bp = Blueprint("project", __name__, url_prefix="/project")
 
@@ -65,14 +66,22 @@ def detail(id):
 def edit(id):
     project = get_project_by_id(id)
     if not is_owner_or_admin(project.pengguna_id):
-        abort(403)
+        return redirect(url_for("project.detail", id=id))
 
     form = ProjectForm()
     if form.validate_on_submit():
         try:
-            image_url = (
-                save_project_image(form.gambar.data, id) if form.gambar.data else None
-            )
+            image_url = project.gambar_url
+
+            # Handle image deletion
+            if form.delete_gambar.data or form.gambar.data:
+                delete_file(project.gambar_url)
+                image_url = None
+
+            # Handle new image upload
+            if form.gambar.data:
+                image_url = save_project_image(form.gambar.data, id)
+
             update_project(
                 project_id=id,
                 judul=form.judul.data,

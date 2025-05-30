@@ -42,7 +42,9 @@ def is_owner_or_admin(resource_owner_id, admin_required=False):
     if not current_user.is_authenticated:
         return False
 
-    if admin_required:
-        return current_user.is_admin
+    is_admin = current_user.role == "Admin"
 
-    return current_user.id == resource_owner_id or current_user.is_admin
+    if admin_required:
+        return is_admin
+
+    return current_user.id == resource_owner_id or is_admin

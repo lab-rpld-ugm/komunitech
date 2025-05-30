@@ -17,10 +17,12 @@
                         <h6>Gambar Saat Ini</h6>
                         <img src="{{ project.gambar_url }}" class="img-thumbnail mb-3" style="max-height: 200px;">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image">
+                            {{ form.delete_gambar.label(class="orm-check-label text-danger") }}
+                            {{ form.delete_gambar(class="form-check-input") }}
+                            <!-- <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image">
                             <label class="form-check-label text-danger" for="remove_image">
                                 Hapus gambar ini
-                            </label>
+                            </label> -->
                         </div>
                     </div>
                     {% endif %}
@@ -63,25 +65,16 @@
                         {{ form.gambar.label(class="form-label") }}
                         {{ form.gambar(class="form-control") }}
                         <div class="form-text">
-                            {% if project.gambar_url %}
+                        {% if project.gambar_url %}
                             Unggah gambar baru untuk mengganti yang ada (format: JPG, PNG, GIF).
-                            {% else %}
+                        {% else %}
                             Unggah gambar untuk memperjelas project Anda (format: JPG, PNG, GIF).
-                            {% endif %}
+                        {% endif %}
                         </div>
+
                         {% for error in form.gambar.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                            <div class="text-danger">{{ error }}</div>
                         {% endfor %}
-                    </div>
-                    
-                    <div class="alert alert-warning">
-                        <div class="d-flex">
-                            <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
-                            <div>
-                                <h5 class="alert-heading">Perhatian!</h5>
-                                <p class="mb-0">Perubahan yang disimpan akan langsung memperbarui project ini.</p>
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="d-flex justify-content-between mt-4">
@@ -92,7 +85,7 @@
                             <button type="reset" class="btn btn-outline-danger me-2">
                                 <i class="bi bi-arrow-counterclockwise"></i> Reset
                             </button>
-                            {{ form.submit(class="btn btn-primary") }}
+                            {{ form.edit(class="btn btn-primary") }}
                         </div>
                     </div>
                 </form>
