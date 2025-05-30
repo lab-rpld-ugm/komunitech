@@ -11,7 +11,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('beranda') }}">
+            <a class="navbar-brand" href="{{ url_for('main.beranda') }}">
                 <span class="fw-bold">Komuni</span>Tech
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -20,12 +20,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('beranda') %}active{% endif %}" 
-                           href="{{ url_for('beranda') }}">Beranda</a>
+                        <a class="nav-link {% if request.path == url_for('main.beranda') %}active{% endif %}" 
+                           href="{{ url_for('main.beranda') }}">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('daftar_project') %}active{% endif %}" 
-                           href="{{ url_for('daftar_project') }}">Project</a>
+                        <a class="nav-link {% if request.path == url_for('project.list_projects') %}active{% endif %}" 
+                           href="{{ url_for('project.list_projects') }}">Project</a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item dropdown">
@@ -34,13 +34,13 @@
                             Tambah
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('buat_project') }}">Buat Project</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('project.create') }}">Buat Project</a></li>
                         </ul>
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('tentang') %}active{% endif %}" 
-                           href="{{ url_for('tentang') }}">Tentang</a>
+                        <a class="nav-link {% if request.path == url_for('main.tentang') %}active{% endif %}" 
+                           href="{{ url_for('main.tentang') }}">Tentang</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -52,21 +52,21 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="#">Profil Saya</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('project_saya') }}">Project Saya</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('kebutuhan_saya') }}">Kebutuhan Saya</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('dukungan_saya') }}">Dukungan Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.projects') }}">Project Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.kebutuhans') }}">Kebutuhan Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.supports') }}">Dukungan Saya</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Keluar</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Keluar</a></li>
                         </ul>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('login') %}active{% endif %}" 
-                           href="{{ url_for('login') }}">Masuk</a>
+                        <a class="nav-link {% if request.path == url_for('auth.login') %}active{% endif %}" 
+                           href="{{ url_for('auth.login') }}">Masuk</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('daftar') %}active{% endif %}" 
-                           href="{{ url_for('daftar') }}">Daftar</a>
+                        <a class="nav-link {% if request.path == url_for('auth.register') %}active{% endif %}" 
+                           href="{{ url_for('auth.register') }}">Daftar</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -101,9 +101,9 @@
                 <div class="col-md-3">
                     <h5>Tautan</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('beranda') }}" class="text-decoration-none">Beranda</a></li>
-                        <li><a href="{{ url_for('daftar_project') }}" class="text-decoration-none">Project</a></li>
-                        <li><a href="{{ url_for('tentang') }}" class="text-decoration-none">Tentang</a></li>
+                        <li><a href="{{ url_for('main.beranda') }}" class="text-decoration-none">Beranda</a></li>
+                        <li><a href="{{ url_for('project.list_projects') }}" class="text-decoration-none">Project</a></li>
+                        <li><a href="{{ url_for('main.tentang') }}" class="text-decoration-none">Tentang</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">

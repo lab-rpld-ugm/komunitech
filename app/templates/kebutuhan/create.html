@@ -5,13 +5,13 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <a href="{{ url_for('beranda') }}">Beranda</a>
+        <a href="{{ url_for('main.beranda') }}">Beranda</a>
       </li>
       <li class="breadcrumb-item">
-        <a href="{{ url_for('daftar_project') }}">Project</a>
+        <a href="{{ url_for('project.list_projects') }}">Project</a>
       </li>
       <li class="breadcrumb-item">
-        <a href="{{ url_for('detail_project', id=project.id) }}">{{ project.judul }}</a>
+        <a href="{{ url_for('project.detail', id=project.id) }}">{{ project.judul }}</a>
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         Ajukan Kebutuhan

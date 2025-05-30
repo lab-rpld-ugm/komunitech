@@ -1,16 +1,16 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
 from app.config import Config
+from app.database.base import init_db
+from app.database.commands import register_commands
+from app.routes import register_blueprint
 
-app = Flask(__name__)
-app.config.from_object(Config)
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-login = LoginManager(app)
-login.login_view = 'login'
-login.login_message = 'Silakan login untuk mengakses halaman ini.'
+def create_app(config=Config):
+    app = Flask(__name__)
+    app.config.from_object(config)
 
-from app import routes, models
+    init_db(app)
+    register_blueprint(app)
+    register_commands(app)
+
+    return app

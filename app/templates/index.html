@@ -7,11 +7,11 @@
         <p class="col-md-8 fs-4">KomuniTech adalah platform yang memudahkan Anda dan komunitas untuk menyampaikan project dan kebutuhan secara terstruktur dan terorganisir.</p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
             {% if current_user.is_authenticated %}
-            <a href="{{ url_for('buat_project') }}" class="btn btn-primary btn-lg px-4 me-md-2">Buat Project</a>
+            <a href="{{ url_for('project.create') }}" class="btn btn-primary btn-lg px-4 me-md-2">Buat Project</a>
             {% else %}
-            <a href="{{ url_for('daftar') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar Sekarang</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar Sekarang</a>
             {% endif %}
-            <a href="{{ url_for('daftar_project') }}" class="btn btn-outline-secondary btn-lg px-4">Lihat Project</a>
+            <a href="{{ url_for('project.list_projects') }}" class="btn btn-outline-secondary btn-lg px-4">Lihat Project</a>
         </div>
     </div>
 </div>
@@ -63,7 +63,7 @@
             <div class="card-body">
                 <span class="badge bg-primary mb-2">{{ project.kategori_project.nama }}</span>
                 <h5 class="card-title mb-2">
-                    <a href="{{ url_for('detail_project', id=project.id) }}" class="text-decoration-none text-dark stretched-link">
+                    <a href="{{ url_for('project.detail', id=project.id) }}" class="text-decoration-none text-dark stretched-link">
                         {{ project.judul }}
                     </a>
                 </h5>
@@ -83,7 +83,7 @@
     {% endfor %}
 </div>
 <div class="text-center mb-5">
-    <a href="{{ url_for('daftar_project') }}" class="btn btn-outline-primary">Lihat Semua Project</a>
+    <a href="{{ url_for('project.list_projects') }}" class="btn btn-outline-primary">Lihat Semua Project</a>
 </div>
 {% else %}
 <div class="alert alert-info mb-5">
@@ -159,10 +159,10 @@
     <p class="lead mb-4">Jadilah bagian dari perubahan. Suarakan kebutuhan komunitas Anda bersama KomuniTech.</p>
     <div class="d-grid gap-2 d-md-flex justify-content-md-center">
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('buat_project') }}" class="btn btn-primary btn-lg px-4">Buat Project</a>
+        <a href="{{ url_for('project.create') }}" class="btn btn-primary btn-lg px-4">Buat Project</a>
         {% else %}
-        <a href="{{ url_for('daftar') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar</a>
-        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Masuk</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4 me-md-2">Daftar</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-lg px-4">Masuk</a>
         {% endif %}
     </div>
 </div>

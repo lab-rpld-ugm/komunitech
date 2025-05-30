@@ -10,6 +10,16 @@
             <div class="card-body p-4">
                 <form action="" method="post" enctype="multipart/form-data" novalidate>
                     {{ form.hidden_tag() }}
+                    <div class="alert alert-info">
+                        <div class="d-flex">
+                            <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                            <div>
+                                <h5 class="alert-heading">Tips Membuat Project</h5>
+                                <p class="mb-0">Project yang baik memiliki tujuan yang jelas dan terukur. Setelah membuat project, Anda dapat menambahkan kebutuhan-kebutuhan spesifik yang diperlukan.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         {{ form.judul.label(class="form-label") }}
                         {{ form.judul(class="form-control") }}
@@ -51,16 +61,6 @@
                         {% for error in form.gambar.errors %}
                         <div class="text-danger">{{ error }}</div>
                         {% endfor %}
-                    </div>
-                    
-                    <div class="alert alert-info">
-                        <div class="d-flex">
-                            <i class="bi bi-info-circle-fill me-2 fs-4"></i>
-                            <div>
-                                <h5 class="alert-heading">Tips Membuat Project</h5>
-                                <p class="mb-0">Project yang baik memiliki tujuan yang jelas dan terukur. Setelah membuat project, Anda dapat menambahkan kebutuhan-kebutuhan spesifik yang diperlukan.</p>
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="d-grid mt-4">

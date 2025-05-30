@@ -3,12 +3,12 @@
 {% block content %}
 <div class="row mb-4 align-items-center">
     <div class="col">
-        <h2 class="mb-0">Kebutuhan yang Saya Ajukan</h2>
-        <p class="text-muted">Daftar kebutuhan yang telah Anda ajukan di berbagai project</p>
+        <h2 class="mb-0">Kebutuhan yang Saya Dukung</h2>
+        <p class="text-muted">Daftar kebutuhan yang telah Anda berikan dukungan</p>
     </div>
 </div>
 
-{% if kebutuhan %}
+{% if dukungan %}
 <div class="card shadow">
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -19,40 +19,34 @@
                         <th>Project</th>
                         <th>Kategori</th>
                         <th>Status</th>
-                        <th>Prioritas</th>
-                        <th>Tanggal Diajukan</th>
-                        <th>Dukungan</th>
+                        <th>Tanggal Dukungan</th>
+                        <th>Total Dukungan</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in kebutuhan %}
+                    {% for item in dukungan %}
                     <tr>
                         <td>
-                            <a href="{{ url_for('detail_kebutuhan', project_id=item.project_id, id=item.id) }}" class="text-decoration-none">
-                                {{ item.judul }}
+                            <a href="{{ url_for('kebutuhan.detail', project_id=item.kebutuhan_didukung.project_id, id=item.kebutuhan_id) }}" class="text-decoration-none">
+                                {{ item.kebutuhan_didukung.judul }}
                             </a>
                         </td>
                         <td>
-                            <a href="{{ url_for('detail_project', id=item.project_id) }}" class="text-decoration-none">
-                                {{ item.project.judul }}
+                            <a href="{{ url_for('project.detail', id=item.kebutuhan_didukung.project_id) }}" class="text-decoration-none">
+                                {{ item.kebutuhan_didukung.project.judul }}
                             </a>
                         </td>
                         <td>
-                            <span class="badge bg-primary">{{ item.kategori_kebutuhan.nama }}</span>
+                            <span class="badge bg-primary">{{ item.kebutuhan_didukung.kategori_kebutuhan.nama }}</span>
                         </td>
                         <td>
-                            <span class="badge {% if item.status == 'Diajukan' %}bg-secondary{% elif item.status == 'Diproses' %}bg-warning text-dark{% else %}bg-success{% endif %}">
-                                {{ item.status }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge {% if item.prioritas == 'Tinggi' %}bg-danger{% elif item.prioritas == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}">
-                                {{ item.prioritas }}
+                            <span class="badge {% if item.kebutuhan_didukung.status == 'Diajukan' %}bg-secondary{% elif item.kebutuhan_didukung.status == 'Diproses' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                {{ item.kebutuhan_didukung.status }}
                             </span>
                         </td>
                         <td>{{ item.timestamp.strftime('%d/%m/%Y') }}</td>
                         <td>
-                            <i class="bi bi-hand-thumbs-up me-1"></i> {{ item.jumlah_dukungan }}
+                            <i class="bi bi-hand-thumbs-up me-1"></i> {{ item.kebutuhan_didukung.jumlah_dukungan }}
                         </td>
                     </tr>
                     {% endfor %}
@@ -98,8 +92,8 @@
     <div class="d-flex">
         <i class="bi bi-info-circle-fill me-2 fs-4"></i>
         <div>
-            <h5 class="alert-heading">Belum Ada Kebutuhan</h5>
-            <p class="mb-0">Anda belum mengajukan kebutuhan apapun. Telusuri <a href="{{ url_for('daftar_project') }}">daftar project</a> dan ajukan kebutuhan untuk project yang Anda minati.</p>
+            <h5 class="alert-heading">Belum Ada Dukungan</h5>
+            <p class="mb-0">Anda belum memberikan dukungan pada kebutuhan apapun. Telusuri <a href="{{ url_for('daftar_project') }}">daftar project</a> untuk menemukan kebutuhan yang ingin Anda dukung.</p>
         </div>
     </div>
 </div>
