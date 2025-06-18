@@ -1,1 +1,183 @@
- 
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="mb-0">Kelola Kategori</h2>
+        <p class="text-muted">Tambah dan kelola kategori untuk project dan kebutuhan</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Form Tambah Kategori -->
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Tambah Kategori Baru</h5>
+            </div>
+            <div class="card-body">
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.nama.label(class="form-label") }}
+                        {{ form.nama(class="form-control") }}
+                        {% for error in form.nama.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.deskripsi.label(class="form-label") }}
+                        {{ form.deskripsi(class="form-control", rows=3) }}
+                        {% for error in form.deskripsi.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Daftar Kategori -->
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Daftar Kategori</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if categories %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="25%">Nama</th>
+                                <th width="40%">Deskripsi</th>
+                                <th width="15%" class="text-center">Digunakan</th>
+                                <th width="15%" class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><strong>{{ category.nama }}</strong></td>
+                                <td>{{ category.deskripsi }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-info">
+                                        {{ category.projects.count() }} Project
+                                    </span>
+                                    <span class="badge bg-secondary">
+                                        {{ category.kebutuhan.count() }} Kebutuhan
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editModal{{ category.id }}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        {% if category.projects.count() == 0 and category.kebutuhan.count() == 0 %}
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ category.id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        {% else %}
+                                        <button type="button" class="btn btn-outline-secondary" disabled
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                title="Tidak dapat dihapus karena sedang digunakan">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editModal{{ category.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Kategori</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form method="post" action="{{ url_for('admin.edit_category', id=category.id) }}">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Nama</label>
+                                                    <input type="text" class="form-control" name="nama" 
+                                                           value="{{ category.nama }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Deskripsi</label>
+                                                    <textarea class="form-control" name="deskripsi" 
+                                                              rows="3" required>{{ category.deskripsi }}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ category.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Hapus Kategori</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Apakah Anda yakin ingin menghapus kategori <strong>{{ category.nama }}</strong>?</p>
+                                            <p class="text-danger mb-0">Tindakan ini tidak dapat dibatalkan.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <form method="post" action="{{ url_for('admin.delete_category', id=category.id) }}" class="d-inline">
+                                                <button type="submit" class="btn btn-danger">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info m-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Belum ada kategori. Tambahkan kategori baru menggunakan form di sebelah kiri.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-warning mt-4">
+    <div class="d-flex">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+        <div>
+            <h5 class="alert-heading">Catatan Penting</h5>
+            <ul class="mb-0">
+                <li>Kategori yang sudah digunakan oleh project atau kebutuhan tidak dapat dihapus</li>
+                <li>Perubahan nama kategori akan mempengaruhi semua project dan kebutuhan yang menggunakannya</li>
+                <li>Pastikan nama kategori jelas dan deskriptif</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
