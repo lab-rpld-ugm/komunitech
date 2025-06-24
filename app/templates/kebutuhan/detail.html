@@ -1,0 +1,237 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<div class="mb-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('main.beranda') }}">Beranda</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('project.list_projects') }}">Project</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('project.detail', id=project.id) }}">{{ project.judul }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ kebutuhan.judul }}
+      </li>
+    </ol>
+  </nav>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between">
+          <span class="badge bg-primary"
+            >{{ kebutuhan.kategori_kebutuhan.nama }}</span
+          >
+          <span
+            class="badge {% if kebutuhan.prioritas == 'Tinggi' %}bg-danger{% elif kebutuhan.prioritas == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}"
+          >
+            Prioritas {{ kebutuhan.prioritas }}
+          </span>
+        </div>
+        <h2 class="card-title mt-2 mb-0">{{ kebutuhan.judul }}</h2>
+        <p class="text-muted mb-0">
+          Diajukan oleh {{ kebutuhan.pengaju.nama }} pada {{
+          kebutuhan.timestamp.strftime('%d/%m/%Y %H:%M') }}
+        </p>
+      </div>
+      
+      {% if kebutuhan.gambar_url %}
+      <img src="{{ kebutuhan.gambar_url }}" class="img-fluid" alt="{{ kebutuhan.judul }}">
+      {% endif %}
+      
+      <div class="card-body">
+        <div class="mb-4">{{ kebutuhan.deskripsi }}</div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-muted"
+            >Status: <strong>{{ kebutuhan.status }}</strong></span
+          >
+          
+          {% if current_user.is_authenticated %}
+            {% if kebutuhan.pengguna_id != current_user.id %}
+              {% if user_supported %}
+              <button class="btn btn-success" disabled>
+                <i class="bi bi-hand-thumbs-up-fill me-1"></i> Didukung ({{ kebutuhan.jumlah_dukungan }})
+              </button>
+              {% else %}
+              <a href="{{ url_for('support.support', project_id=project.id, id=kebutuhan.id) }}" class="btn btn-outline-primary">
+                <i class="bi bi-hand-thumbs-up me-1"></i> Dukung ({{ kebutuhan.jumlah_dukungan }})
+              </a>
+              {% endif %}
+            {% else %}
+            <span class="text-muted">Anda tidak dapat mendukung kebutuhan yang Anda ajukan sendiri.</span>
+            {% endif %}
+          {% else %}
+          <div class="alert alert-secondary p-2 mb-0">
+            <a href="{{ url_for('auth.login') }}">Login</a> untuk memberikan dukungan pada kebutuhan ini.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian Komentar -->
+    <div class="card shadow">
+      <div class="card-header bg-white">
+        <h4 class="mb-0">Diskusi ({{ komentar|length }})</h4>
+      </div>
+      {% if komentar %}
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+          {% for item in komentar %}
+          <li class="list-group-item p-3">
+            <div class="d-flex">
+              <div class="flex-shrink-0">
+                <div
+                  class="bg-light rounded-circle p-2 text-center"
+                  style="width: 40px; height: 40px"
+                >
+                  <i class="bi bi-person"></i>
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">{{ item.penulis.nama }}</h6>
+                  <small class="text-muted"
+                    >{{ item.timestamp.strftime('%d/%m/%Y %H:%M') }}</small
+                  >
+                </div>
+                <p class="mt-2 mb-2">{{ item.isi }}</p>
+                
+                {% if item.gambar_url %}
+                <div class="mt-2 mb-0">
+                  <img src="{{ item.gambar_url }}" class="img-fluid rounded" style="max-height: 200px;" alt="Gambar komentar">
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% else %}
+      <div class="card-body">
+        <p class="text-center text-muted mb-0">
+          Belum ada komentar. Jadilah yang pertama berkomentar!
+        </p>
+      </div>
+      {% endif %}
+      <div class="card-footer bg-white">
+        {% if current_user.is_authenticated %}
+        <form action="" method="post" enctype="multipart/form-data" novalidate>
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            {{ form.isi(class="form-control", placeholder="Tulis komentar Anda di sini...", rows=3) }} 
+            {% for error in form.isi.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="mb-3">
+            {{ form.gambar.label(class="form-label") }}
+            {{ form.gambar(class="form-control") }}
+            <div class="form-text">Unggah gambar untuk komentar Anda (opsional).</div>
+            {% for error in form.gambar.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="d-flex justify-content-end">
+            {{ form.submit(class="btn btn-primary") }}
+          </div>
+        </form>
+        {% else %}
+        <div class="alert alert-secondary">
+          <a href="{{ url_for('auth.login') }}">Login</a> untuk menambahkan komentar.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Informasi Kebutuhan</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Project</span>
+            <a href="{{ url_for('project.detail', id=project.id) }}" class="text-decoration-none">
+              {{ project.judul }}
+            </a>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Status</span>
+            <span class="badge bg-secondary">{{ kebutuhan.status }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Prioritas</span>
+            <span
+              class="badge {% if kebutuhan.prioritas == 'Tinggi' %}bg-danger{% elif kebutuhan.prioritas == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}"
+            >
+              {{ kebutuhan.prioritas }}
+            </span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Kategori</span>
+            <span class="badge bg-primary"
+              >{{ kebutuhan.kategori_kebutuhan.nama }}</span
+            >
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Dukungan</span>
+            <span
+              ><i class="bi bi-hand-thumbs-up"></i> {{ kebutuhan.jumlah_dukungan }}</span
+            >
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Komentar</span>
+            <span><i class="bi bi-chat-text"></i> {{ komentar|length }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card shadow mb-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Tentang Pengaju</h5>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <div class="bg-light rounded-circle p-3 d-inline-block mb-2">
+            <i class="bi bi-person fs-1"></i>
+          </div>
+          <h5 class="mb-0">{{ kebutuhan.pengaju.nama }}</h5>
+          <p class="text-muted">Anggota sejak {{ kebutuhan.pengaju.id }}</p>
+        </div>
+        <div class="d-grid">
+          <a href="#" class="btn btn-outline-secondary">
+            <i class="bi bi-envelope me-1"></i> Hubungi
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Kebutuhan Terkait</h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <p class="mb-0 small">
+            Belum ada kebutuhan terkait yang serupa dengan kebutuhan ini.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

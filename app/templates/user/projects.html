@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="mb-0">Project Saya</h2>
+        <p class="text-muted">Daftar project yang telah Anda buat</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <a href="{{ url_for('project.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Buat Project Baru
+        </a>
+    </div>
+</div>
+
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            {% if project.gambar_url %}
+            <img src="{{ project.gambar_url }}" class="card-img-top" alt="{{ project.judul }}" style="height: 180px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light text-center py-5">
+                <i class="bi bi-briefcase fs-1 text-secondary"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <span class="badge bg-primary mb-2">{{ project.kategori_project.nama }}</span>
+                <h5 class="card-title mb-2">
+                    <a href="{{ url_for('project.detail', id=project.id) }}" class="text-decoration-none text-dark stretched-link">
+                        {{ project.judul }}
+                    </a>
+                </h5>
+                <p class="text-muted small mb-2">Dibuat pada {{ project.timestamp.strftime('%d/%m/%Y') }}</p>
+                <p class="card-text">{{ project.deskripsi|truncate(150) }}</p>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-secondary">{{ project.status }}</span>
+                    <div>
+                        <i class="bi bi-card-checklist me-1"></i> {{ project.kebutuhan.count() }} Kebutuhan
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<nav aria-label="Navigasi halaman">
+    <ul class="pagination justify-content-center">
+        {% if prev_url %}
+        <li class="page-item">
+            <a class="page-link" href="{{ prev_url }}" aria-label="Sebelumnya">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Sebelumnya">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        {% if next_url %}
+        <li class="page-item">
+            <a class="page-link" href="{{ next_url }}" aria-label="Selanjutnya">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Selanjutnya">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% else %}
+<div class="alert alert-info">
+    <div class="d-flex">
+        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+        <div>
+            <h5 class="alert-heading">Belum Ada Project</h5>
+            <p class="mb-0">Anda belum membuat project. Klik tombol "Buat Project Baru" di atas untuk memulai.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

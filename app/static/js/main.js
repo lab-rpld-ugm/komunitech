@@ -6,13 +6,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Hilangkan pesan flash setelah beberapa detik
-    setTimeout(function() {
-        var alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            var bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 5000);
+    // setTimeout(function() {
+    //     var alerts = document.querySelectorAll('.alert');
+    //     alerts.forEach(function(alert) {
+    //         var bsAlert = new bootstrap.Alert(alert);
+    //         bsAlert.close();
+    //     });
+    // }, 5000);
 
     // Animasikan statistik pada halaman beranda
     animateNumbers();

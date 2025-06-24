@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('main.beranda') }}">Beranda</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('project.list_projects') }}">Project</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ project.judul }}
+      </li>
+    </ol>
+  </nav>
+</div>
+
+<div class="row">
+  <!-- Kolom Kiri - Informasi Project -->
+  <div class="col-md-8">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between">
+          <span class="badge bg-primary">{{ project.kategori_project.nama }}</span>
+          <span class="badge bg-secondary">{{ project.status }}</span>
+        </div>
+        <h2 class="card-title mt-2 mb-1">{{ project.judul }}</h2>
+        <p class="text-muted">
+          Dibuat oleh {{ project.pemilik.nama }} pada {{
+          project.timestamp.strftime('%d/%m/%Y %H:%M') }}
+        </p>
+      </div>
+      
+      {% if project.gambar_url %}
+      <img src="{{ project.gambar_url }}" class="img-fluid" alt="{{ project.judul }}">
+      {% endif %}
+      
+      <div class="card-body">
+        <div class="mb-4">{{ project.deskripsi }}</div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-muted">
+            Total Kebutuhan: <strong>{{ kebutuhan|length }}</strong>
+          </span>
+          
+          {% if current_user.is_authenticated and project.pengguna_id == current_user.id %}
+          <a href="{{ url_for('project.edit', id=project.id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i> Edit Project
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Daftar Kebutuhan dalam Project -->
+    <div class="card shadow">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Kebutuhan dalam Project</h4>
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('kebutuhan.create', project_id=project.id) }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Ajukan Kebutuhan
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if kebutuhan %}
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          {% for item in kebutuhan %}
+          <a href="{{ url_for('kebutuhan.detail', project_id=project.id, id=item.id) }}" class="list-group-item list-group-item-action p-3">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">{{ item.judul }}</h5>
+              <span class="badge {% if item.prioritas == 'Tinggi' %}bg-danger{% elif item.prioritas == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                {{ item.prioritas }}
+              </span>
+            </div>
+            <p class="mb-1">{{ item.deskripsi|truncate(150) }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">Diajukan oleh {{ item.pengaju.nama }} pada {{ item.timestamp.strftime('%d/%m/%Y') }}</small>
+              <div>
+                <span class="badge bg-secondary">{{ item.status }}</span>
+                <span class="ms-2"><i class="bi bi-chat-text me-1"></i>{{ item.komentar.count() }}</span>
+                <span class="ms-2"><i class="bi bi-hand-thumbs-up me-1"></i>{{ item.jumlah_dukungan }}</span>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div class="card-body">
+        <div class="alert alert-info mb-0">
+          <div class="d-flex">
+            <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+            <div>
+              <h5 class="alert-heading">Belum Ada Kebutuhan</h5>
+              <p class="mb-0">Project ini belum memiliki kebutuhan. Jadilah yang pertama mengajukan kebutuhan!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Kolom Kanan - Informasi Tambahan -->
+  <div class="col-md-4">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Informasi Project</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Status</span>
+            <span class="badge bg-secondary">{{ project.status }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Kategori</span>
+            <span class="badge bg-primary">{{ project.kategori_project.nama }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Tanggal Dibuat</span>
+            <span>{{ project.timestamp.strftime('%d/%m/%Y') }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Jumlah Kebutuhan</span>
+            <span><i class="bi bi-card-checklist"></i> {{ kebutuhan|length }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card shadow mb-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Tentang Pembuat</h5>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <div class="bg-light rounded-circle p-3 d-inline-block mb-2">
+            <i class="bi bi-person fs-1"></i>
+          </div>
+          <h5 class="mb-0">{{ project.pemilik.nama }}</h5>
+          <p class="text-muted">Anggota sejak {{ project.pemilik.id }}</p>
+        </div>
+        <div class="d-grid">
+          <a href="#" class="btn btn-outline-secondary">
+            <i class="bi bi-envelope me-1"></i> Hubungi
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Project Terkait</h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <p class="mb-0 small">
+            Belum ada project terkait yang serupa dengan project ini.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

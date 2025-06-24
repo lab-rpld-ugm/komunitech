@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: komunitech_web
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      - DATABASE_URL=postgresql://komunitech_user:komunitech_pass@db:5432/komunitech_db
+      - REDIS_URL=redis://redis:6379/0
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-true}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@komunitech.id}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@komunitech.id}
+      - ENABLE_EMAIL_VERIFICATION=${ENABLE_EMAIL_VERIFICATION:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./app/static/uploads:/app/app/static/uploads
+      - app_logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - komunitech_network
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        while ! nc -z db 5432; do sleep 1; done &&
+        echo 'Database is ready!' &&
+        flask db upgrade &&
+        python -c 'from app.database.commands import seed_db_command; seed_db_command()' &&
+        gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 --log-level info run:app
+      "
+
+  db:
+    image: postgres:15-alpine
+    container_name: komunitech_db
+    environment:
+      - POSTGRES_DB=komunitech_db
+      - POSTGRES_USER=komunitech_user
+      - POSTGRES_PASSWORD=komunitech_pass
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - komunitech_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U komunitech_user -d komunitech_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: komunitech_redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - komunitech_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    container_name: komunitech_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./app/static:/app/static:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - komunitech_network
+
+  # Optional: Adminer for database management
+  adminer:
+    image: adminer:latest
+    container_name: komunitech_adminer
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
+    restart: unless-stopped
+    networks:
+      - komunitech_network
+    profiles:
+      - debug
+
+  # Optional: Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: komunitech_redis_commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - komunitech_network
+    profiles:
+      - debug
+
+volumes:
+  postgres_data:
+  redis_data:
+  app_logs:
+  nginx_logs:
+
+networks:
+  komunitech_network:
+    driver: bridge
