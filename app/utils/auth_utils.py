@@ -1,5 +1,5 @@
 from flask import redirect, request, url_for
-from werkzeug.urls import url_parse
+from urllib.parse import urlparse  # Changed from werkzeug.urls import url_parse
 from flask_login import current_user
 
 
@@ -14,13 +14,13 @@ def get_redirect_target(param_name: str = "next") -> str:
     """
     next_page = request.args.get(param_name)
 
-    if not next_page or url_parse(next_page).netloc != "":
+    if not next_page or urlparse(next_page).netloc != "":  # Changed from url_parse
         return None
 
     return next_page
 
 
-def redirect_authenticated_user(default_endpoint: str = "beranda"):
+def redirect_authenticated_user(default_endpoint: str = "main.beranda"):  # Changed from "beranda"
     """Get redirect response for authenticated users.
 
     Args:

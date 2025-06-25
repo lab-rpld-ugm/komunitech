@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user
-from werkzeug.urls import url_parse
+from urllib.parse import urlparse  # Changed from werkzeug.urls import url_parse
 from app.forms import LoginForm, RegisterForm
 from app.services.auth_service import register_user, authenticate_user
 from app.utils.auth_utils import redirect_authenticated_user
@@ -20,7 +20,7 @@ def login():
             if user:
                 login_user(user)
                 next_page = request.args.get("next")
-                if not next_page or url_parse(next_page).netloc != "":
+                if not next_page or urlparse(next_page).netloc != "":  # Changed from url_parse
                     next_page = url_for("main.beranda")
                 return redirect(next_page)
             flash("Invalid username or password")
