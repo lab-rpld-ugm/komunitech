@@ -1,7 +1,6 @@
 from app import create_app
-from app.config import DevConfig
 
-app = create_app(DevConfig)
+app = create_app('development')  # Pass string instead of class
 
 if __name__ == "__main__":
     app.run()

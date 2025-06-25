@@ -24,9 +24,26 @@ class Pengguna(UserMixin, db.Model):
     is_active = db.Column(db.Boolean, default=True)
     email_verified = db.Column(db.Boolean, default=False)
     
-    # Relationships
+    # Relationships - Fixed with foreign_keys specification
     projects = db.relationship("Project", backref="pemilik", lazy="dynamic", cascade="all, delete-orphan")
-    kebutuhan = db.relationship("Kebutuhan", backref="pengaju", lazy="dynamic", cascade="all, delete-orphan")
+    
+    # Fixed: Specify foreign_keys to resolve ambiguity
+    kebutuhan = db.relationship(
+        "Kebutuhan", 
+        foreign_keys="Kebutuhan.pengguna_id",
+        backref="pengaju", 
+        lazy="dynamic", 
+        cascade="all, delete-orphan"
+    )
+    
+    # Additional relationship for processed kebutuhan
+    processed_kebutuhan = db.relationship(
+        "Kebutuhan",
+        foreign_keys="Kebutuhan.processed_by",
+        backref="processor",
+        lazy="dynamic"
+    )
+    
     komentar = db.relationship("Komentar", backref="penulis", lazy="dynamic", cascade="all, delete-orphan")
     dukungan = db.relationship("Dukungan", backref="pendukung", lazy="dynamic", cascade="all, delete-orphan")
     notifications = db.relationship("Notification", backref="user", lazy="dynamic", cascade="all, delete-orphan")
