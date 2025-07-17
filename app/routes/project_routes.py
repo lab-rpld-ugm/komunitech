@@ -37,9 +37,7 @@ def create():
     form = ProjectForm()
     if form.validate_on_submit():
         try:
-            image_url = (
-                save_project_image(form.gambar.data) if form.gambar.data else None
-            )
+            image_url = save_project_image(form.gambar.data) if form.gambar.data else None
             project = create_project(
                 judul=form.judul.data,
                 deskripsi=form.deskripsi.data,
@@ -58,7 +56,8 @@ def create():
 @project_bp.route("/<int:id>", methods=["GET"])
 def detail(id):
     project = get_project_by_id(id)
-    return render_template("project/detail.html", project=project)
+    kebutuhan = project.kebutuhan.all()
+    return render_template("project/detail.html", project=project, kebutuhan=kebutuhan)
 
 
 @project_bp.route("/<int:id>/edit", methods=["GET", "POST"])
