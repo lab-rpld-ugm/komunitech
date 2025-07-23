@@ -55,7 +55,9 @@ def get_project_by_id(project_id: int) -> Optional[Project]:
     Returns:
         Project: Project object or None if not found
     """
-    return Project.query.get(project_id)
+    project = Project.query.get(project_id)
+    # print(f"KEBUTUHAN: {len(project.kebutuhan.all())}")
+    return project
 
 
 def update_project(
@@ -64,7 +66,7 @@ def update_project(
     deskripsi: str = None,
     kategori_id: int = None,
     gambar_url: str = None,
-    status: str = None
+    status: str = None,
 ) -> Project:
     """Update an existing project.
 
@@ -97,7 +99,7 @@ def update_project(
     if gambar_url is not None:
         project.gambar_url = gambar_url
     if status is not None:
-        valid_statuses = ['Aktif', 'Selesai', 'Ditutup']
+        valid_statuses = ["Aktif", "Selesai", "Ditutup"]
         if status not in valid_statuses:
             raise ValueError("Status tidak valid")
         project.status = status
@@ -162,24 +164,18 @@ def get_recent_projects(page: int = 1, per_page: int = 10, status: str = None):
         Pagination: Paginated recent projects
     """
     query = Project.query
-    
+
     if status:
         query = query.filter_by(status=status)
     else:
         # Default to active projects only
-        query = query.filter_by(status='Aktif')
+        query = query.filter_by(status="Aktif")
 
-    return query.order_by(Project.timestamp.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
+    return query.order_by(Project.timestamp.desc()).paginate(page=page, per_page=per_page, error_out=False)
 
 
 def get_all_projects(
-    page: int = 1,
-    per_page: int = None,
-    status: str = None,
-    kategori_id: int = None,
-    search: str = None
+    page: int = 1, per_page: int = None, status: str = None, kategori_id: int = None, search: str = None
 ):
     """Get all projects with optional filters.
 
@@ -194,7 +190,7 @@ def get_all_projects(
         Pagination: Paginated projects
     """
     if per_page is None:
-        per_page = current_app.config.get('ITEMS_PER_PAGE', 12)
+        per_page = current_app.config.get("ITEMS_PER_PAGE", 12)
 
     query = Project.query
 
@@ -203,16 +199,9 @@ def get_all_projects(
     if kategori_id:
         query = query.filter_by(kategori_id=kategori_id)
     if search:
-        query = query.filter(
-            db.or_(
-                Project.judul.contains(search),
-                Project.deskripsi.contains(search)
-            )
-        )
+        query = query.filter(db.or_(Project.judul.contains(search), Project.deskripsi.contains(search)))
 
-    return query.order_by(Project.timestamp.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
+    return query.order_by(Project.timestamp.desc()).paginate(page=page, per_page=per_page, error_out=False)
 
 
 def get_project_stats(project_id: int = None) -> Dict[str, Any]:
@@ -230,42 +219,39 @@ def get_project_stats(project_id: int = None) -> Dict[str, Any]:
             return {}
 
         return {
-            'total_kebutuhan': project.kebutuhan.count(),
-            'kebutuhan_by_status': {
-                'diajukan': project.kebutuhan.filter_by(status='Diajukan').count(),
-                'diproses': project.kebutuhan.filter_by(status='Diproses').count(),
-                'selesai': project.kebutuhan.filter_by(status='Selesai').count(),
-                'ditolak': project.kebutuhan.filter_by(status='Ditolak').count()
+            "total_kebutuhan": project.kebutuhan.count(),
+            "kebutuhan_by_status": {
+                "diajukan": project.kebutuhan.filter_by(status="Diajukan").count(),
+                "diproses": project.kebutuhan.filter_by(status="Diproses").count(),
+                "selesai": project.kebutuhan.filter_by(status="Selesai").count(),
+                "ditolak": project.kebutuhan.filter_by(status="Ditolak").count(),
             },
-            'completion_percentage': project.completion_percentage,
-            'total_support': project.total_support,
-            'view_count': project.view_count,
-            'collaborators_count': project.collaborators.count(),
-            'created_at': project.timestamp,
-            'updated_at': project.updated_at
+            "completion_percentage": project.completion_percentage,
+            "total_support": project.total_support,
+            "view_count": project.view_count,
+            "collaborators_count": project.collaborators.count(),
+            "created_at": project.timestamp,
+            "updated_at": project.updated_at,
         }
 
     # Global stats
     total = Project.query.count()
-    by_status = db.session.query(
-        Project.status,
-        db.func.count(Project.id)
-    ).group_by(Project.status).all()
+    by_status = db.session.query(Project.status, db.func.count(Project.id)).group_by(Project.status).all()
 
-    by_category = db.session.query(
-        Kategori.nama,
-        db.func.count(Project.id)
-    ).join(
-        Project, Kategori.id == Project.kategori_id
-    ).group_by(Kategori.nama).all()
+    by_category = (
+        db.session.query(Kategori.nama, db.func.count(Project.id))
+        .join(Project, Kategori.id == Project.kategori_id)
+        .group_by(Kategori.nama)
+        .all()
+    )
 
     return {
-        'total': total,
-        'active': Project.query.filter_by(status='Aktif').count(),
-        'completed': Project.query.filter_by(status='Selesai').count(),
-        'closed': Project.query.filter_by(status='Ditutup').count(),
-        'by_status': dict(by_status),
-        'by_category': dict(by_category)
+        "total": total,
+        "active": Project.query.filter_by(status="Aktif").count(),
+        "completed": Project.query.filter_by(status="Selesai").count(),
+        "closed": Project.query.filter_by(status="Ditutup").count(),
+        "by_status": dict(by_status),
+        "by_category": dict(by_category),
     }
 
 
@@ -283,31 +269,29 @@ def bulk_update_projects(project_ids: List[int], action: str) -> Dict[str, Any]:
         ValueError: If invalid action
     """
     if not project_ids:
-        return {'affected': 0, 'errors': []}
+        return {"affected": 0, "errors": []}
 
     affected = 0
     errors = []
 
     try:
-        if action == 'activate':
-            affected = Project.query.filter(
-                Project.id.in_(project_ids)
-            ).update({'status': 'Aktif'}, synchronize_session=False)
+        if action == "activate":
+            affected = Project.query.filter(Project.id.in_(project_ids)).update(
+                {"status": "Aktif"}, synchronize_session=False
+            )
 
-        elif action == 'complete':
-            affected = Project.query.filter(
-                Project.id.in_(project_ids)
-            ).update({'status': 'Selesai'}, synchronize_session=False)
+        elif action == "complete":
+            affected = Project.query.filter(Project.id.in_(project_ids)).update(
+                {"status": "Selesai"}, synchronize_session=False
+            )
 
-        elif action == 'close':
-            affected = Project.query.filter(
-                Project.id.in_(project_ids)
-            ).update({'status': 'Ditutup'}, synchronize_session=False)
+        elif action == "close":
+            affected = Project.query.filter(Project.id.in_(project_ids)).update(
+                {"status": "Ditutup"}, synchronize_session=False
+            )
 
-        elif action == 'delete':
-            projects_to_delete = Project.query.filter(
-                Project.id.in_(project_ids)
-            ).all()
+        elif action == "delete":
+            projects_to_delete = Project.query.filter(Project.id.in_(project_ids)).all()
 
             for project in projects_to_delete:
                 db.session.delete(project)
@@ -324,17 +308,11 @@ def bulk_update_projects(project_ids: List[int], action: str) -> Dict[str, Any]:
         errors.append(str(e))
         current_app.logger.error(f"Bulk action error: {e}")
 
-    return {
-        'affected': affected,
-        'errors': errors
-    }
+    return {"affected": affected, "errors": errors}
 
 
 def add_collaborator(
-    project_id: int,
-    user_id: int,
-    role: str = 'Contributor',
-    added_by: int = None
+    project_id: int, user_id: int, role: str = "Contributor", added_by: int = None
 ) -> ProjectCollaborator:
     """Add a collaborator to a project.
 
@@ -359,10 +337,7 @@ def add_collaborator(
         raise ValueError("User tidak ditemukan")
 
     # Check if already a collaborator
-    existing = ProjectCollaborator.query.filter_by(
-        project_id=project_id,
-        user_id=user_id
-    ).first()
+    existing = ProjectCollaborator.query.filter_by(project_id=project_id, user_id=user_id).first()
     if existing:
         raise ValueError("User sudah menjadi kolaborator")
 
@@ -370,12 +345,7 @@ def add_collaborator(
     if project.pengguna_id == user_id:
         raise ValueError("Owner project tidak perlu ditambahkan sebagai kolaborator")
 
-    collaborator = ProjectCollaborator(
-        project_id=project_id,
-        user_id=user_id,
-        role=role,
-        added_by=added_by
-    )
+    collaborator = ProjectCollaborator(project_id=project_id, user_id=user_id, role=role, added_by=added_by)
 
     db.session.add(collaborator)
     db.session.commit()
@@ -397,10 +367,7 @@ def remove_collaborator(project_id: int, user_id: int) -> bool:
     Raises:
         ValueError: If collaborator not found
     """
-    collaborator = ProjectCollaborator.query.filter_by(
-        project_id=project_id,
-        user_id=user_id
-    ).first()
+    collaborator = ProjectCollaborator.query.filter_by(project_id=project_id, user_id=user_id).first()
 
     if not collaborator:
         raise ValueError("Kolaborator tidak ditemukan")
@@ -424,13 +391,7 @@ def get_project_collaborators(project_id: int) -> List[ProjectCollaborator]:
     return ProjectCollaborator.query.filter_by(project_id=project_id).all()
 
 
-def search_projects(
-    query: str,
-    category_id: int = None,
-    status: str = None,
-    page: int = 1,
-    per_page: int = None
-):
+def search_projects(query: str, category_id: int = None, status: str = None, page: int = 1, per_page: int = None):
     """Search projects.
 
     Args:
@@ -444,13 +405,10 @@ def search_projects(
         Pagination: Search results
     """
     if per_page is None:
-        per_page = current_app.config.get('ITEMS_PER_PAGE', 12)
+        per_page = current_app.config.get("ITEMS_PER_PAGE", 12)
 
     search_query = Project.query.filter(
-        db.or_(
-            Project.judul.ilike(f'%{query}%'),
-            Project.deskripsi.ilike(f'%{query}%')
-        )
+        db.or_(Project.judul.ilike(f"%{query}%"), Project.deskripsi.ilike(f"%{query}%"))
     )
 
     if category_id:
@@ -458,9 +416,7 @@ def search_projects(
     if status:
         search_query = search_query.filter_by(status=status)
 
-    return search_query.order_by(Project.timestamp.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
+    return search_query.order_by(Project.timestamp.desc()).paginate(page=page, per_page=per_page, error_out=False)
 
 
 def get_popular_projects(limit: int = 10) -> List[Project]:
@@ -472,11 +428,10 @@ def get_popular_projects(limit: int = 10) -> List[Project]:
     Returns:
         List[Project]: Popular projects
     """
-    return Project.query.join(
-        Project.kebutuhan
-    ).group_by(
-        Project.id
-    ).order_by(
-        db.func.count(Project.kebutuhan).desc(),
-        Project.view_count.desc()
-    ).limit(limit).all()
+    return (
+        Project.query.join(Project.kebutuhan)
+        .group_by(Project.id)
+        .order_by(db.func.count(Project.kebutuhan).desc(), Project.view_count.desc())
+        .limit(limit)
+        .all()
+    )
